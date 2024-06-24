@@ -1,0 +1,198 @@
+2024-05-21 14:10:17 UNO RUN ...
+2024-05-21 14:10:17 Params: {'model_name': 'uno', 'train_sources': ['CCLE'], 'test_sources': ['train'], 'cell_types': None, 'cell_features': ['rnaseq'], 'drug_features': ['descriptors'], 'dense': [1000, 1000, 1000, 1000, 1000], 'dense_feature_layers': [1000, 1000, 1000], 'activation': 'relu', 'loss': 'mse', 'optimizer': 'adamax', 'scaling': 'std', 'dropout': 0.1, 'epochs': 50, 'batch_size': 32, 'val_split': 0.2, 'cv': 1, 'max_val_loss': 1.0, 'learning_rate': 0.0001, 'base_lr': None, 'agg_dose': 'AUC', 'residual': False, 'reduce_lr': True, 'warmup_lr': True, 'batch_normalization': False, 'feature_subsample': 0, 'rng_seed': 2018, 'no_gen': False, 'verbose': False, 'preprocess_rnaseq': 'source_scale', 'gpus': [0], 'use_landmark_genes': True, 'no_feature_source': True, 'no_response_source': True, 'save_path': '/dev/shm/Uno/save/8999967.amn-0001/36', 'single': True, 'on_memory_loader': True, 'ckpt_checksum': True, 'ckpt_save_interval': 0, 'timeout': -1, 'train_bool': True, 'profiling': False, 'experiment_id': '8999967.amn-0001', 'run_id': '36', 'logfile': '/dev/shm/Uno/save/8999967.amn-0001/36/python.log', 'shuffle': False, 'ckpt_restart_mode': 'off', 'ckpt_skip_epochs': 0, 'ckpt_directory': '/dev/shm/Uno/save/8999967.amn-0001/36', 'ckpt_save_best': True, 'ckpt_save_best_metric': 'val_loss', 'ckpt_save_weights_only': False, 'ckpt_keep_mode': 'linear', 'ckpt_keep_limit': 5, 'by_cell': None, 'by_drug': None, 'cell_subset_path': '', 'drug_subset_path': '', 'drug_median_response_min': -1, 'drug_median_response_max': 1, 'dense_cell_feature_layers': None, 'dense_drug_feature_layers': None, 'use_filtered_genes': False, 'feature_subset_path': '', 'cell_feature_subset_path': '', 'drug_feature_subset_path': '', 'es': True, 'cp': False, 'tb': False, 'tb_prefix': 'tb', 'partition_by': None, 'cache': None, 'export_csv': None, 'export_data': None, 'use_exported_data': '/dev/shm/Uno/x1922c5s4b0n0.36.merged.landmark.h5', 'growth_bins': 0, 'initial_weights': None, 'save_weights': '/dev/shm/Uno/save/8999967.amn-0001/36/0.0.model.h5', 'config_file': '/home/brettin/CSC249ADOA01_CNDA/brettin/Benchmarks/Pilot1/Uno/uno_auc_model.txt', 'data_type': <class 'numpy.float32'>, 'data_dir': '/dev/shm/Uno/uno/Data', 'output_dir': '/dev/shm/Uno/uno/Output/8999967.amn-0001/36'}
+2024-05-21 14:10:17 Feature encoding submodel for cell.rnaseq:
+2024-05-21 14:10:17 Model: "cell.rnaseq"
+2024-05-21 14:10:17 _________________________________________________________________
+2024-05-21 14:10:17  Layer (type)                Output Shape              Param #   
+2024-05-21 14:10:17 =================================================================
+2024-05-21 14:10:17  input_1 (InputLayer)        [(None, 958)]             0         
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  dense (Dense)               (None, 1000)              959000    
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  permanent_dropout (Permane  (None, 1000)              0         
+2024-05-21 14:10:17  ntDropout)                                                      
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  dense_1 (Dense)             (None, 1000)              1001000   
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  permanent_dropout_1 (Perma  (None, 1000)              0         
+2024-05-21 14:10:17  nentDropout)                                                    
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  dense_2 (Dense)             (None, 1000)              1001000   
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  permanent_dropout_2 (Perma  (None, 1000)              0         
+2024-05-21 14:10:17  nentDropout)                                                    
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17 =================================================================
+2024-05-21 14:10:17 Total params: 2961000 (11.30 MB)
+2024-05-21 14:10:17 Trainable params: 2961000 (11.30 MB)
+2024-05-21 14:10:17 Non-trainable params: 0 (0.00 Byte)
+2024-05-21 14:10:17 _________________________________________________________________
+2024-05-21 14:10:17 Feature encoding submodel for drug.descriptors:
+2024-05-21 14:10:17 Model: "drug.descriptors"
+2024-05-21 14:10:17 _________________________________________________________________
+2024-05-21 14:10:17  Layer (type)                Output Shape              Param #   
+2024-05-21 14:10:17 =================================================================
+2024-05-21 14:10:17  input_2 (InputLayer)        [(None, 1613)]            0         
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  dense_3 (Dense)             (None, 1000)              1614000   
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  permanent_dropout_3 (Perma  (None, 1000)              0         
+2024-05-21 14:10:17  nentDropout)                                                    
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  dense_4 (Dense)             (None, 1000)              1001000   
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  permanent_dropout_4 (Perma  (None, 1000)              0         
+2024-05-21 14:10:17  nentDropout)                                                    
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  dense_5 (Dense)             (None, 1000)              1001000   
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17  permanent_dropout_5 (Perma  (None, 1000)              0         
+2024-05-21 14:10:17  nentDropout)                                                    
+2024-05-21 14:10:17                                                                  
+2024-05-21 14:10:17 =================================================================
+2024-05-21 14:10:17 Total params: 3616000 (13.79 MB)
+2024-05-21 14:10:17 Trainable params: 3616000 (13.79 MB)
+2024-05-21 14:10:17 Non-trainable params: 0 (0.00 Byte)
+2024-05-21 14:10:17 _________________________________________________________________
+2024-05-21 14:10:17 Combined model:
+2024-05-21 14:10:17 Model: "model"
+2024-05-21 14:10:17 __________________________________________________________________________________________________
+2024-05-21 14:10:17  Layer (type)                Output Shape                 Param #   Connected to                  
+2024-05-21 14:10:17 ==================================================================================================
+2024-05-21 14:10:17  input.cell.rnaseq (InputLa  [(None, 958)]                0         []                            
+2024-05-21 14:10:17  yer)                                                                                             
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  input.drug1.descriptors (I  [(None, 1613)]               0         []                            
+2024-05-21 14:10:17  nputLayer)                                                                                       
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  cell.rnaseq (Functional)    (None, 1000)                 2961000   ['input.cell.rnaseq[0][0]']   
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  drug.descriptors (Function  (None, 1000)                 3616000   ['input.drug1.descriptors[0][0
+2024-05-21 14:10:17  al)                                                                ]']                           
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  concatenate (Concatenate)   (None, 2000)                 0         ['cell.rnaseq[0][0]',         
+2024-05-21 14:10:17                                                                      'drug.descriptors[0][0]']    
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  dense_6 (Dense)             (None, 1000)                 2001000   ['concatenate[0][0]']         
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  permanent_dropout_6 (Perma  (None, 1000)                 0         ['dense_6[0][0]']             
+2024-05-21 14:10:17  nentDropout)                                                                                     
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  dense_7 (Dense)             (None, 1000)                 1001000   ['permanent_dropout_6[0][0]'] 
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  permanent_dropout_7 (Perma  (None, 1000)                 0         ['dense_7[0][0]']             
+2024-05-21 14:10:17  nentDropout)                                                                                     
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  dense_8 (Dense)             (None, 1000)                 1001000   ['permanent_dropout_7[0][0]'] 
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  permanent_dropout_8 (Perma  (None, 1000)                 0         ['dense_8[0][0]']             
+2024-05-21 14:10:17  nentDropout)                                                                                     
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  dense_9 (Dense)             (None, 1000)                 1001000   ['permanent_dropout_8[0][0]'] 
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  permanent_dropout_9 (Perma  (None, 1000)                 0         ['dense_9[0][0]']             
+2024-05-21 14:10:17  nentDropout)                                                                                     
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  dense_10 (Dense)            (None, 1000)                 1001000   ['permanent_dropout_9[0][0]'] 
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  permanent_dropout_10 (Perm  (None, 1000)                 0         ['dense_10[0][0]']            
+2024-05-21 14:10:17  anentDropout)                                                                                    
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17  dense_11 (Dense)            (None, 1)                    1001      ['permanent_dropout_10[0][0]']
+2024-05-21 14:10:17                                                                                                   
+2024-05-21 14:10:17 ==================================================================================================
+2024-05-21 14:10:17 Total params: 12583001 (48.00 MB)
+2024-05-21 14:10:17 Trainable params: 12583001 (48.00 MB)
+2024-05-21 14:10:17 Non-trainable params: 0 (0.00 Byte)
+2024-05-21 14:10:17 __________________________________________________________________________________________________
+2024-05-21 14:10:17 CKPT CONSTRUCT...
+2024-05-21 14:10:17 CKPT CONSTRUCT OK.
+2024-05-21 14:10:17 template model: <keras.src.engine.functional.Functional object at 0x152e9caf7cd0>
+2024-05-21 14:10:19 COMPILE
+2024-05-21 14:10:19 Will save weights to: /dev/shm/Uno/save/8999967.amn-0001/36/0.0.model.h5
+2024-05-21 14:10:37 Between random pairs in y_val:
+2024-05-21 14:10:37   mse: 0.04766401
+2024-05-21 14:10:37   mae: 0.15980901
+2024-05-21 14:10:37   r2: -0.99657960
+2024-05-21 14:10:37   corr: 0.00171020
+2024-05-21 14:10:37 Data points per epoch: train = 468344, val = 117086, test = 2279
+2024-05-21 14:10:37 Steps per epoch: train = 14635, val = 3658, test = 71
+2024-05-21 14:10:37 Epoch 0: lr=0.001
+2024-05-21 14:11:50 [Epoch: 0] loss: 0.028557, mae: 0.079761, r2: -0.321157, val_loss: 0.008681, val_mae: 0.065738, val_r2: 0.589623
+2024-05-21 14:11:50 Epoch 1: lr=0.00082
+2024-05-21 14:13:02 [Epoch: 1] loss: 0.008017, mae: 0.064028, r2: 0.621143, val_loss: 0.007666, val_mae: 0.061741, val_r2: 0.637835
+2024-05-21 14:13:02 Epoch 2: lr=0.00064
+2024-05-21 14:14:14 [Epoch: 2] loss: 0.007343, mae: 0.060993, r2: 0.651979, val_loss: 0.007181, val_mae: 0.059452, val_r2: 0.658992
+2024-05-21 14:14:14 Epoch 3: lr=0.00046
+2024-05-21 14:15:26 [Epoch: 3] loss: 0.006866, mae: 0.058804, r2: 0.673367, val_loss: 0.006823, val_mae: 0.059027, val_r2: 0.676404
+2024-05-21 14:15:26 Epoch 4: lr=0.00028
+2024-05-21 14:16:38 [Epoch: 4] loss: 0.006452, mae: 0.056930, r2: 0.692413, val_loss: 0.006546, val_mae: 0.056635, val_r2: 0.689309
+2024-05-21 14:16:38 Epoch 5: lr=0.0001
+2024-05-21 14:17:50 [Epoch: 5] loss: 0.006134, mae: 0.055418, r2: 0.707082, val_loss: 0.006370, val_mae: 0.056021, val_r2: 0.696538
+2024-05-21 14:17:50 Epoch 6: lr=0.0001
+2024-05-21 14:19:02 [Epoch: 6] loss: 0.006027, mae: 0.054929, r2: 0.711904, val_loss: 0.006357, val_mae: 0.055882, val_r2: 0.695169
+2024-05-21 14:19:02 Epoch 7: lr=0.0001
+2024-05-21 14:20:14 [Epoch: 7] loss: 0.005946, mae: 0.054566, r2: 0.715575, val_loss: 0.006297, val_mae: 0.056049, val_r2: 0.698108
+2024-05-21 14:20:14 Epoch 8: lr=0.0001
+2024-05-21 14:21:26 [Epoch: 8] loss: 0.005868, mae: 0.054223, r2: 0.719117, val_loss: 0.006286, val_mae: 0.056012, val_r2: 0.698874
+2024-05-21 14:21:26 Epoch 9: lr=0.0001
+2024-05-21 14:22:38 [Epoch: 9] loss: 0.005811, mae: 0.053930, r2: 0.722083, val_loss: 0.006273, val_mae: 0.055356, val_r2: 0.698939
+2024-05-21 14:22:38 Epoch 10: lr=0.0001
+2024-05-21 14:23:50 [Epoch: 10] loss: 0.005750, mae: 0.053672, r2: 0.724729, val_loss: 0.006206, val_mae: 0.055601, val_r2: 0.703494
+2024-05-21 14:23:50 Epoch 11: lr=0.0001
+2024-05-21 14:25:02 [Epoch: 11] loss: 0.005683, mae: 0.053342, r2: 0.727972, val_loss: 0.006187, val_mae: 0.054831, val_r2: 0.704610
+2024-05-21 14:25:02 Epoch 12: lr=0.0001
+2024-05-21 14:26:13 [Epoch: 12] loss: 0.005616, mae: 0.053046, r2: 0.730898, val_loss: 0.006159, val_mae: 0.055092, val_r2: 0.706233
+2024-05-21 14:26:14 Epoch 13: lr=0.0001
+2024-05-21 14:27:25 [Epoch: 13] loss: 0.005566, mae: 0.052827, r2: 0.733302, val_loss: 0.006150, val_mae: 0.054861, val_r2: 0.705987
+2024-05-21 14:27:25 Epoch 14: lr=0.0001
+2024-05-21 14:28:37 [Epoch: 14] loss: 0.005521, mae: 0.052593, r2: 0.735509, val_loss: 0.006149, val_mae: 0.055023, val_r2: 0.707611
+2024-05-21 14:28:37 Epoch 15: lr=0.0001
+2024-05-21 14:29:49 [Epoch: 15] loss: 0.005455, mae: 0.052307, r2: 0.738610, val_loss: 0.006166, val_mae: 0.054543, val_r2: 0.706199
+2024-05-21 14:29:49 Epoch 16: lr=5e-05
+2024-05-21 14:31:01 [Epoch: 16] loss: 0.005341, mae: 0.051747, r2: 0.744073, val_loss: 0.006089, val_mae: 0.054611, val_r2: 0.708803
+2024-05-21 14:31:01 Epoch 17: lr=5e-05
+2024-05-21 14:32:13 [Epoch: 17] loss: 0.005292, mae: 0.051564, r2: 0.746351, val_loss: 0.006084, val_mae: 0.054490, val_r2: 0.708425
+2024-05-21 14:32:13 Epoch 18: lr=5e-05
+2024-05-21 14:33:25 [Epoch: 18] loss: 0.005265, mae: 0.051411, r2: 0.747247, val_loss: 0.006074, val_mae: 0.054637, val_r2: 0.709440
+2024-05-21 14:33:25 Epoch 19: lr=5e-05
+2024-05-21 14:34:37 [Epoch: 19] loss: 0.005248, mae: 0.051351, r2: 0.748047, val_loss: 0.006120, val_mae: 0.054259, val_r2: 0.707739
+2024-05-21 14:34:37 Epoch 20: lr=5e-05
+2024-05-21 14:35:49 [Epoch: 20] loss: 0.005203, mae: 0.051124, r2: 0.750321, val_loss: 0.006095, val_mae: 0.054467, val_r2: 0.707268
+2024-05-21 14:35:49 Epoch 21: lr=5e-05
+2024-05-21 14:37:01 [Epoch: 21] loss: 0.005189, mae: 0.051060, r2: 0.750947, val_loss: 0.006090, val_mae: 0.054478, val_r2: 0.708087
+2024-05-21 14:37:01 Epoch 22: lr=2.5e-05
+2024-05-21 14:38:13 [Epoch: 22] loss: 0.005125, mae: 0.050781, r2: 0.753889, val_loss: 0.006075, val_mae: 0.054644, val_r2: 0.708664
+2024-05-21 14:38:13 Epoch 23: lr=2.5e-05
+2024-05-21 14:39:25 [Epoch: 23] loss: 0.005099, mae: 0.050659, r2: 0.755038, val_loss: 0.006059, val_mae: 0.054303, val_r2: 0.709932
+2024-05-21 14:39:25 Epoch 24: lr=2.5e-05
+2024-05-21 14:40:37 [Epoch: 24] loss: 0.005084, mae: 0.050571, r2: 0.755850, val_loss: 0.006077, val_mae: 0.054351, val_r2: 0.709574
+2024-05-21 14:40:37 Epoch 25: lr=2.5e-05
+2024-05-21 14:41:49 [Epoch: 25] loss: 0.005076, mae: 0.050514, r2: 0.756272, val_loss: 0.006040, val_mae: 0.054278, val_r2: 0.711292
+2024-05-21 14:41:49 Epoch 26: lr=2.5e-05
+2024-05-21 14:43:01 [Epoch: 26] loss: 0.005059, mae: 0.050463, r2: 0.757055, val_loss: 0.006063, val_mae: 0.054261, val_r2: 0.709575
+2024-05-21 14:43:01 Epoch 27: lr=1.25e-05
+2024-05-21 14:44:13 [Epoch: 27] loss: 0.005025, mae: 0.050290, r2: 0.758709, val_loss: 0.006058, val_mae: 0.054027, val_r2: 0.710182
+2024-05-21 14:44:13 Epoch 28: lr=1.25e-05
+2024-05-21 14:45:25 [Epoch: 28] loss: 0.005007, mae: 0.050219, r2: 0.759185, val_loss: 0.006080, val_mae: 0.054156, val_r2: 0.708590
+2024-05-21 14:45:25 Epoch 29: lr=1.25e-05
+2024-05-21 14:46:37 [Epoch: 29] loss: 0.005018, mae: 0.050223, r2: 0.758983, val_loss: 0.006050, val_mae: 0.054197, val_r2: 0.710270
+2024-05-21 14:46:37 Epoch 30: lr=1.25e-05
+2024-05-21 14:47:49 [Epoch: 30] loss: 0.004997, mae: 0.050156, r2: 0.759735, val_loss: 0.006092, val_mae: 0.054117, val_r2: 0.708010
+2024-05-21 14:47:49 Epoch 31: lr=1.25e-05
+2024-05-21 14:49:01 [Epoch: 31] loss: 0.004988, mae: 0.050112, r2: 0.760322, val_loss: 0.006051, val_mae: 0.054174, val_r2: 0.710263
+2024-05-21 14:49:01 Epoch 32: lr=1e-05
+2024-05-21 14:50:13 [Epoch: 32] loss: 0.004977, mae: 0.050063, r2: 0.760945, val_loss: 0.006065, val_mae: 0.054156, val_r2: 0.709573
+2024-05-21 14:50:13 Epoch 33: lr=1e-05
+2024-05-21 14:51:24 [Epoch: 33] loss: 0.004983, mae: 0.050128, r2: 0.760402, val_loss: 0.006057, val_mae: 0.054289, val_r2: 0.709963
+2024-05-21 14:51:24 Epoch 34: lr=1e-05
+2024-05-21 14:52:36 [Epoch: 34] loss: 0.004973, mae: 0.050035, r2: 0.760933, val_loss: 0.006074, val_mae: 0.054163, val_r2: 0.709229
+2024-05-21 14:52:36 Epoch 35: lr=1e-05
+2024-05-21 14:53:48 [Epoch: 35] loss: 0.004966, mae: 0.049972, r2: 0.761264, val_loss: 0.006048, val_mae: 0.054054, val_r2: 0.710540
+2024-05-21 14:53:48 history_length: 36
+2024-05-21 14:53:48 stopping: early
+2024-05-21 14:53:48 Comparing y_true and y_pred:
+2024-05-21 14:53:48   mse: 0.00819486
+2024-05-21 14:53:48   mae: 0.07114179
+2024-05-21 14:53:48   r2: -0.05341787
+2024-05-21 14:53:48   corr: 0.24803329
