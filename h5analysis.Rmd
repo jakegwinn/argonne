@@ -1,0 +1,609 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, comment = "", prompt = TRUE)
+knitr::opts_chunk$set(out.width="65%", out.height="65%", fig.align="center") 
+```
+
+```{r, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(gridExtra)
+library(ISLR2)
+library(GGally)
+library(effectsize)
+library(MASS)
+library(FNN)
+library(dvmisc)
+library(boot)
+library(caret)
+library(corrplot)
+library(glmnet)
+library(MLmetrics)
+library(themis)
+library(stargazer)
+library(cluster)
+library(forcats)
+library(glue)
+library(corrplot)
+library(car)
+
+Sys.setenv('R_MAX_VSIZE'=32000000000)
+```
+
+```{r}
+df <- read_csv("/Users/jakegwinn/Documents/argonne_all/merged.landmark.csv")
+```
+
+```{r}
+data <- read_tsv("/Users/jakegwinn/Documents/argonne_all/argonne/data/raw_data/y_data/response.tsv")
+```
+
+```{r}
+df
+```
+
+```{r}
+df <- df %>% 
+    mutate(
+        source = as.factor(source), 
+        improve_chem_id = as.factor(improve_chem_id), 
+        improve_sample_id = as.factor(improve_sample_id)
+    )
+```
+
+```{r}
+data
+```
+
+```{r}
+data 
+nums <- unlist(lapply(data, is.numeric), use.names = F)
+
+data_nums <- data[, nums] %>% drop_na()
+```
+
+```{r}
+d.corr <- cor(data_nums)
+
+corrplot(d.corr)
+# d.corr
+```
+
+```{r}
+d.corr
+```
+
+```{r}
+nums <- unlist(lapply(df, is.numeric), use.names = F)
+
+df_nums <- df[, nums]
+# df_nums
+df_nums_small <- df_nums %>% dplyr::select(-contains("mordred")) %>% drop_na()
+
+df_nums_small %>% dplyr::select(aac1, auc1)
+```
+
+```{r}
+x_data <- df[, 16:973]
+df
+# x_data[ ,ncol(x_data)]
+# ncol(x_data)
+# lapply(x_data, is.numeric)
+x.corr <- cor(x_data)
+x.corr[1,1]
+```
+
+```{r}
+df_latter <- df[,973:ncol(df)] %>% drop_na()
+```
+
+```{r}
+latter.corr <- cor(df_latter, use = "complete.obs")
+latter.corr
+```
+
+```{r}
+
+```
+
+```{r}
+significant <- list()
+
+for (i in 1:length(latter.corr[1,])){
+    for (j in 1:length(latter.corr[,1])){
+        
+        row <- rownames(latter.corr)[i]
+        col <- colnames(latter.corr)[j]
+        # print(abs(latter.corr[i,j]))
+        
+        if (!is.na(abs(latter.corr[i,j]))) {
+            if ((abs(latter.corr[i,j]) > 0.99)){
+            # print(x.corr[i,j])
+            
+            
+            
+                row <- rownames(latter.corr)[i]
+                col <- colnames(latter.corr)[j]  
+                
+                if (abs(latter.corr[i,j]) == 1) { 
+                    if(row!=col) { 
+                        rowcol <- c(row, col)            
+                        val <- list(c(rowcol, latter.corr[i,j]))
+                        significant <- c(significant, val)
+                    }
+                }
+                
+                else{ 
+                    rowcol <- c(row, col)            
+                
+                    val <- list(c(rowcol, latter.corr[i,j]))
+                # print(val)
+                # rowcol <- c(row, col, x.corr[i,j])
+                    significant <- c(significant, val)
+                }
+                
+                
+            }
+        }
+    }
+}
+
+length(significant)
+significant
+```
+
+```{r}
+df_latter %>% 
+    ggplot(aes(x=mordred.AATSC0m, y=mordred.AATSC0Z)) + 
+    geom_point() + 
+    geom_smooth()
+```
+
+```{r}
+auc <- df[,"auc"]
+
+model_data <- cbind(x_data, auc)
+model_data
+```
+
+```{r}
+model <- lm(auc ~. ,data = model_data)
+```
+
+```{r}
+summary(model)$coef
+```
+
+```{r}
+x.corr
+```
+
+```{r}
+attributes(alias(model)$Complete)$dimnames[[1]]
+```
+
+```{r}
+length(x.corr[,1])
+```
+
+```{r}
+# vif(model)
+```
+
+```{r}
+significant <- list()
+
+for (i in 1:length(x.corr[1,])){
+    for (j in 1:length(x.corr[,1])){
+        
+        row <- rownames(x.corr)[i]
+        col <- colnames(x.corr)[j]
+        
+        if ((abs(x.corr[i,j]) > 0.8)){
+            # print(x.corr[i,j])
+            
+            
+            
+            row <- rownames(x.corr)[i]
+            col <- colnames(x.corr)[j]  
+            
+            if (abs(x.corr[i,j]) == 1) { 
+                if(row!=col) { 
+                    rowcol <- c(row, col)            
+                    val <- list(c(rowcol, x.corr[i,j]))
+                    significant <- c(significant, val)
+                }
+            }
+            
+            else{ 
+                rowcol <- c(row, col)            
+            
+                val <- list(c(rowcol, x.corr[i,j]))
+            # print(val)
+            # rowcol <- c(row, col, x.corr[i,j])
+                significant <- c(significant, val)
+            }
+            
+            
+        }
+    }
+}
+
+length(significant)
+significant
+
+```
+
+```{r}
+x_data %>% 
+    ggplot(aes(x = BUB1B, y = NUSAP1)) + 
+    geom_point() + 
+    geom_smooth()
+```
+
+```{r}
+x_data %>% 
+    ggplot(aes(x = `IKZF1`, y = `TJP1`)) + 
+    geom_point() + 
+    geom_smooth()
+```
+
+```{r}
+df %>% 
+    ggplot(aes(x = dss1, y = auc1)) + 
+    geom_point(method=lm, level = 0.95, aes(alpha = 0.5, )) + 
+    geom_smooth() + 
+    labs(
+        title = "dss1 vs auc1"
+    )
+    
+```
+
+```{r}
+df %>% 
+    ggplot(aes(x = dss1, y=auc)) + 
+    geom_point(method=lm, level = 0.95, aes(alpha = 0.5, )) +
+    geom_smooth()
+```
+
+```{r}
+df %>% 
+    ggplot(aes(x = aac1, y=auc1)) + 
+    geom_point(method=lm, level = 0.95, aes(alpha = 0.5, )) +
+    geom_smooth()
+```
+
+```{r}
+df %>% 
+    ggplot(aes(x = dss1, y=aac1)) + 
+    geom_point(method=lm, level = 0.95, aes(alpha = 0.5, )) +
+    geom_smooth()
+```
+
+```{r}
+data.cor <- cor(df_nums_small)
+```
+
+```{r}
+df[df$improve_chem_id == "Drug_1078",]
+```
+
+```{r}
+df %>% 
+    group_by(source, improve_chem_id) %>% 
+    summarize(
+        mean_auc = mean(auc),
+        auc_var = var(auc),
+        count = n()
+    ) %>% 
+    arrange(improve_chem_id, desc(count) ) 
+    
+```
+
+```{r}
+df %>% 
+    group_by(improve_chem_id, improve_sample_id) %>% 
+    summarize(
+        mean_auc = mean(auc), 
+        count = n()
+    ) %>% 
+    arrange(desc(count))
+```
+
+```{r}
+df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        mean_auc = mean(auc), 
+        count = n()
+    ) %>% 
+    arrange(desc(count)) %>% 
+
+    ggplot(aes(x = fct_infreq(improve_chem_id))) + 
+    geom_bar()
+
+```
+
+```{r}
+by_study_box <- function(drug) { 
+    df[df$improve_chem_id == drug,] %>% 
+    ggplot(aes(x = improve_chem_id, y = auc, fill = source)) + 
+    geom_boxplot()
+}
+```
+
+```{r, fig.width=7, fig.height=7}
+by_study_box("Drug_988")
+```
+
+## Investigating weird lots of low auc in GDSCv1
+
+```{r}
+drg = "Drug_1078"
+df[df$improve_chem_id == drg,] %>% 
+    ggplot(aes(x = auc, fill = source)) + 
+    geom_histogram(alpha = 0.6, position = "identity", bins = 35) + 
+    facet_wrap(~source) + 
+    labs(
+        title = glue("{drg} in Different Studies"), 
+    ) 
+
+# ggsave("drug988_by_study.png", path = "/Users/jakegwinn/Documents/argonne_all/argonne/plots")
+```
+
+```{r}
+df[df$improve_chem_id == "Drug_1078",] %>% 
+    group_by(source) %>% 
+    summarize(
+        num_samples = n_distinct(improve_sample_id)
+    )
+    
+```
+
+## Looking at the difference in samples
+
+```{r}
+symdiff <- function( x, y) { setdiff( union(x, y), intersect(x, y))}
+```
+
+```{r}
+d1078_GDSCv1 <- df[df$improve_chem_id == "Drug_1078" & df$source == "GDSCv1",]
+d1078_CTRPv2 <- df[df$improve_chem_id == "Drug_1078" & df$source == "CTRPv2",]
+d1078_GDSCv2 <- df[df$improve_chem_id == "Drug_1078" & df$source == "GDSCv2",]
+```
+
+```{r}
+samp_not_GDSCv2 <- setdiff(d1078_GDSCv1$improve_sample_id, d1078_GDSCv2$improve_sample_id)
+length(samp_not_GDSCv2)
+```
+
+```{r}
+samp_not_CTRPv2 <- setdiff(d1078_GDSCv1$improve_sample_id, d1078_CTRPv2$improve_sample_id)
+length(samp_not_CTRPv2)
+```
+
+```{r}
+setdiff(samp_not_CTRPv2, samp_not_GDSCv2)
+```
+
+```{r}
+setdiff(samp_not_GDSCv2, samp_not_CTRPv2)
+```
+
+```{r}
+super_low_auc <- d1078_GDSCv1 %>% 
+    dplyr::select(source, improve_sample_id, auc) %>% 
+    arrange((auc)) 
+# %>% 
+#     dplyr::select(improve_sample_id)
+
+super_low_auc
+```
+
+```{r}
+df[df$improve_chem_id == "Drug_1078" & df$source == "GDSCv1" & df$improve_sample_id %in% super_low_auc$improve_sample_id, ]
+```
+
+## All super low auc samples are in other studies that do not measure them as low
+
+```{r}
+d1078_CTRPv2[d1078_CTRPv2$improve_sample_id %in% super_low_auc$improve_sample_id,]
+d1078_GDSCv2[d1078_GDSCv2$improve_sample_id %in% super_low_auc$improve_sample_id,]
+```
+
+```{r}
+d1078_GDSCv1[d1078_GDSCv1$improve_sample_id %in% super_low_auc$improve_sample_id,]
+```
+
+## Looking at 1078 same samples auc distribution
+
+```{r}
+same_samps <- intersect(d1078_GDSCv1$improve_sample_id, intersect(d1078_CTRPv2$improve_sample_id, d1078_GDSCv2$improve_sample_id))
+length(same_samps)
+```
+
+```{r}
+drg = "Drug_1078"
+data <- df[df$improve_chem_id == "Drug_1078" & df$improve_sample_id %in% same_samps,]
+
+data %>% 
+    ggplot(aes(x = auc, fill = source)) + 
+    geom_histogram(alpha = 0.6, position = "identity", bins = 35) + 
+    facet_wrap(~source) + 
+    labs(
+        title = glue("{drg} in Different Studies with Same Samples") 
+    )
+
+# ggsave("drug_1078_by_study_samesamps.png", path = "/Users/jakegwinn/Documents/argonne_all/argonne/plots", dpi = 700)
+```
+## 1078 super low auc 
+```{r}
+small_same_samps <- data[data$source == "GDSCv1",] %>% 
+    dplyr::select(improve_sample_id, auc) %>% 
+    arrange(auc) %>% 
+    filter(auc < 0.01)
+```
+
+```{r}
+data[data$improve_sample_id %in% small_same_samps$improve_sample_id,] %>% 
+    dplyr::select(source, improve_sample_id, auc) %>% 
+    arrange(improve_sample_id, desc(auc)) 
+# %>% 
+#     ggplot(aes(x = auc, color = improve_sample_id)) + 
+#     geom_boxplot()
+```
+
+```{r}
+model <- aov(auc~source, data=data)
+
+summary(model)
+```
+
+```{r}
+TukeyHSD(model)
+```
+
+## Looking at 988 same samples auc distribution
+
+```{r}
+df[df$improve_chem_id == "Drug_988",] %>% 
+    group_by(source) %>% 
+    summarize(
+        num_samples = n_distinct(improve_sample_id)
+    )
+    
+```
+
+```{r}
+d988_GDSCv1 <- df[df$improve_chem_id == "Drug_988" & df$source == "GDSCv1",]
+d988_CTRPv2 <- df[df$improve_chem_id == "Drug_988" & df$source == "CTRPv2",]
+d988_GDSCv2 <- df[df$improve_chem_id == "Drug_988" & df$source == "GDSCv2",]
+d988_gCSI <- df[df$improve_chem_id == "Drug_988" & df$source == "gCSI",]
+```
+
+```{r}
+same_samp_988 <- intersect(d988_GDSCv1$improve_sample_id, intersect(d988_CTRPv2$improve_sample_id, intersect(d988_GDSCv2$improve_sample_id, d988_gCSI$improve_sample_id)))
+```
+
+## All samps
+```{r}
+drg = "Drug_988"
+df[df$improve_chem_id == drg,] %>% 
+    ggplot(aes(x = auc, fill = source)) + 
+    geom_histogram(alpha = 0.6, position = "identity", bins = 35) + 
+    facet_wrap(~source) + 
+    labs(
+        title = glue("{drg} in Different Studies with Same Samples"), 
+    )
+```
+
+# Same samps
+
+```{r}
+drg = "Drug_988"
+df[df$improve_chem_id == drg & df$improve_sample_id %in% same_samp_988,] %>% 
+    ggplot(aes(x = auc, fill = source)) + 
+    geom_histogram(alpha = 0.6, position = "identity", bins = 35) + 
+    facet_wrap(~source) + 
+    labs(
+        title = glue("{drg} in Different Studies with Same Samples"), 
+    )
+
+# ggsave("drug988_by_study_samesamps.png", path = "/Users/jakegwinn/Documents/argonne_all/argonne/plots")
+```
+
+## Looking at difference between studies with sample measurments
+
+```{r}
+drg = "Drug_988"
+d_988 <- df[df$improve_chem_id == drg & df$improve_sample_id %in% same_samp_988,]
+d_full_988 <- df[df$improve_chem_id == drg,]
+```
+
+```{r}
+d_988 %>% 
+    group_by(improve_sample_id) %>% 
+    summarize(
+        num = n()
+    ) %>% 
+    arrange(desc(num))
+```
+
+
+```{r}
+samp_988 = "ACH-000927"
+
+d_988[d_988$improve_sample_id == samp_988,] %>% 
+    dplyr::select(source, improve_chem_id, improve_sample_id, auc) %>% 
+    arrange(source, desc(auc))
+    
+
+d_988 %>% 
+    dplyr::select(source, improve_sample_id, auc) %>% 
+    group_by(improve_sample_id) %>% 
+    summarize(
+        low = min(auc), 
+        high = max(auc), 
+        range = high - low
+    ) %>% 
+    arrange(desc(range))
+    
+```
+
+```{r}
+d_988 %>% 
+    group_by(source) %>% 
+    summarize(count = n())
+```
+
+```{r}
+model_988 <- aov(auc~source, data=d_988)
+
+summary(model_988)
+```
+
+```{r}
+TukeyHSD(model_988)
+```
+
+```{r}
+# plot(TukeyHSD(model_988), las = 2)
+```
+
+```{r}
+df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        num_studies = n_distinct(source), 
+        num_obs = n(), 
+        var_auc = var(auc)
+    ) %>% 
+    arrange(desc(var_auc))
+```
+
+```{r}
+by_study_box("Drug_988")
+```
+
+```{r}
+df %>% 
+    group_by(source) %>% 
+    summarize(
+        count = n()
+    ) %>% 
+    arrange(count) %>% 
+    ggplot(aes(x = source, y = count)) + 
+    geom_bar(stat="identity", position = "dodge", ) + 
+    labs(
+        title = "Frequency of Study Observations"
+    )
+```
+
+```{r}
+
+```
