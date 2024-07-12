@@ -35,6 +35,10 @@ library(car)
 Sys.setenv('R_MAX_VSIZE'=32000000000)
 ```
 
+# EDA
+
+## Inputing data
+
 ```{r}
 df <- read_csv("/Users/jakegwinn/Documents/argonne_all/merged.landmark.csv")
 ```
@@ -59,6 +63,8 @@ df <- df %>%
 ```{r}
 data
 ```
+
+## Correlation Analysis
 
 ```{r}
 data 
@@ -163,6 +169,7 @@ df_latter %>%
     geom_point() + 
     geom_smooth()
 ```
+
 
 ```{r}
 auc <- df[,"auc"]
@@ -285,13 +292,19 @@ df %>%
     geom_smooth()
 ```
 
+# Drug Analysis
+
 ```{r}
-data.cor <- cor(df_nums_small)
+# data.cor <- cor(df_nums_small)
 ```
 
 ```{r}
-df[df$improve_chem_id == "Drug_1078",]
+# df[df$improve_chem_id == "Drug_1078",]
 ```
+
+## EDA
+
+### Overall Stats of Study, drug combos
 
 ```{r}
 df %>% 
@@ -304,6 +317,8 @@ df %>%
     arrange(improve_chem_id, desc(count) ) 
     
 ```
+
+### Most common drug and sample combos
 
 ```{r}
 df %>% 
@@ -323,9 +338,8 @@ df %>%
         count = n()
     ) %>% 
     arrange(desc(count)) %>% 
-
-    ggplot(aes(x = fct_infreq(improve_chem_id))) + 
-    geom_bar()
+    ggplot(aes(x = improve_chem_id, y = count)) + 
+    geom_bar(stat = "Identity")
 
 ```
 
@@ -341,7 +355,9 @@ by_study_box <- function(drug) {
 by_study_box("Drug_988")
 ```
 
-## Investigating weird lots of low auc in GDSCv1
+## Drug_1078 Investigation
+
+### Histograms by study
 
 ```{r}
 drg = "Drug_1078"
@@ -356,6 +372,8 @@ df[df$improve_chem_id == drg,] %>%
 # ggsave("drug988_by_study.png", path = "/Users/jakegwinn/Documents/argonne_all/argonne/plots")
 ```
 
+### Number of distinct samples per study
+
 ```{r}
 df[df$improve_chem_id == "Drug_1078",] %>% 
     group_by(source) %>% 
@@ -365,7 +383,7 @@ df[df$improve_chem_id == "Drug_1078",] %>%
     
 ```
 
-## Looking at the difference in samples
+### Getting samples that are in all studies
 
 ```{r}
 symdiff <- function( x, y) { setdiff( union(x, y), intersect(x, y))}
@@ -375,6 +393,9 @@ symdiff <- function( x, y) { setdiff( union(x, y), intersect(x, y))}
 d1078_GDSCv1 <- df[df$improve_chem_id == "Drug_1078" & df$source == "GDSCv1",]
 d1078_CTRPv2 <- df[df$improve_chem_id == "Drug_1078" & df$source == "CTRPv2",]
 d1078_GDSCv2 <- df[df$improve_chem_id == "Drug_1078" & df$source == "GDSCv2",]
+d1078_ccle <- df[df$improve_chem_id == "Drug_1078" & df$source == "CCLE",]
+
+
 ```
 
 ```{r}
@@ -394,6 +415,7 @@ setdiff(samp_not_CTRPv2, samp_not_GDSCv2)
 ```{r}
 setdiff(samp_not_GDSCv2, samp_not_CTRPv2)
 ```
+#### Samples with weirdly low auc
 
 ```{r}
 super_low_auc <- d1078_GDSCv1 %>% 
@@ -423,13 +445,13 @@ d1078_GDSCv1[d1078_GDSCv1$improve_sample_id %in% super_low_auc$improve_sample_id
 ## Looking at 1078 same samples auc distribution
 
 ```{r}
-same_samps <- intersect(d1078_GDSCv1$improve_sample_id, intersect(d1078_CTRPv2$improve_sample_id, d1078_GDSCv2$improve_sample_id))
+same_samps_1078 <- intersect(d1078_ccle$improve_sample_id, intersect(d1078_GDSCv1$improve_sample_id, intersect(d1078_CTRPv2$improve_sample_id, d1078_GDSCv2$improve_sample_id)))
 length(same_samps)
 ```
 
 ```{r}
 drg = "Drug_1078"
-data <- df[df$improve_chem_id == "Drug_1078" & df$improve_sample_id %in% same_samps,]
+data_1078 <- df[df$improve_chem_id == "Drug_1078" & df$improve_sample_id %in% same_samps_1078,]
 
 data %>% 
     ggplot(aes(x = auc, fill = source)) + 
@@ -450,7 +472,7 @@ small_same_samps <- data[data$source == "GDSCv1",] %>%
 ```
 
 ```{r}
-data[data$improve_sample_id %in% small_same_samps$improve_sample_id,] %>% 
+data_1078[data$improve_sample_id %in% small_same_samps$improve_sample_id,] %>% 
     dplyr::select(source, improve_sample_id, auc) %>% 
     arrange(improve_sample_id, desc(auc)) 
 # %>% 
@@ -459,7 +481,20 @@ data[data$improve_sample_id %in% small_same_samps$improve_sample_id,] %>%
 ```
 
 ```{r}
-model <- aov(auc~source, data=data)
+drg = "Drug_1078"
+df[df$improve_chem_id == drg & df$improve_sample_id %in% same_samps_1078,] %>% 
+    ggplot(aes(x = auc, fill = source)) + 
+    geom_histogram(alpha = 0.6, position = "identity", bins = 35) + 
+    facet_wrap(~source) + 
+    labs(
+        title = glue("{drg} in Different Studies with Same Samples"), 
+    )
+
+```
+
+
+```{r}
+model <- aov(auc~source, data=data_1078)
 
 summary(model)
 ```
@@ -498,7 +533,7 @@ df[df$improve_chem_id == drg,] %>%
     geom_histogram(alpha = 0.6, position = "identity", bins = 35) + 
     facet_wrap(~source) + 
     labs(
-        title = glue("{drg} in Different Studies with Same Samples"), 
+        title = glue("{drg} in Different Studies with ALL Samples"), 
     )
 ```
 
@@ -604,6 +639,84 @@ df %>%
     )
 ```
 
+# Study Analysis
+
 ```{r}
+df %>% 
+    group_by(source) %>% 
+    summarize(
+        num_obs = n()
+    )
+```
+
+
+```{r}
+df %>% 
+    ggplot(aes(x = auc)) + 
+    geom_histogram(bins = 70) + 
+    facet_wrap(~source)
+```
+
+```{r}
+ccle_df <- df[df$source == "CCLE", ]
+ctrp_df <- df[df$source == "CTRPv2", ]
+gcsi_df <- df[df$source == "gCSI", ]
+
+gdsc1_df <- df[df$source == "GDSCv1", ]
+gdsc2_df <- df[df$source == "GDSCv2", ]
 
 ```
+
+```{r}
+ccle_df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        obs = n()
+    ) %>% 
+    arrange(desc(obs))
+
+ctrp_df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        obs = n()
+    ) %>% 
+    arrange(desc(obs))
+
+gcsi_df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        obs = n()
+    ) %>% 
+    arrange(desc(obs))
+
+gdsc1_df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        obs = n()
+    ) %>% 
+    arrange(desc(obs))
+
+gdsc2_df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        obs = n()
+    ) %>% 
+    arrange(desc(obs))
+
+```
+
+```{r}
+df %>% 
+    group_by(improve_chem_id) %>% 
+    summarize(
+        obs = n()
+    ) %>% 
+    arrange(desc(obs)) 
+```
+
+```{r}
+df %>% 
+    dplyr::select(source) %>% 
+    unique()
+```
+
